@@ -84,7 +84,10 @@ stable
 security definer
 set search_path = public
 as $$
-  select lower(coalesce((select auth.jwt() ->> 'email'), '')) = 'enrique@hackinghr.io';
+  select lower(coalesce((select auth.jwt() ->> 'email'), '')) in (
+    'enrique@hackinghr.io',
+    'lisa@unitedalum.com'
+  );
 $$;
 
 revoke all on function private.is_admin() from public;
@@ -191,4 +194,56 @@ create policy inventory_uploads_admin_insert
   on public.inventory_uploads
   for insert
   to authenticated
+  with check ((select private.is_admin()));
+
+create table if not exists public.email_logs (
+  id uuid primary key default gen_random_uuid(),
+  action text not null,
+  recipient text not null,
+  subject text not null,
+  status text not null check (status in ('sent', 'failed')),
+  error text,
+  html text,
+  text_body text,
+  provider_id text,
+  triggered_by uuid references auth.users (id) on delete set null,
+  metadata jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists email_logs_created_at_idx
+  on public.email_logs (created_at desc);
+
+create unique index if not exists email_logs_provider_id_idx
+  on public.email_logs (provider_id)
+  where provider_id is not null;
+
+alter table public.email_logs enable row level security;
+alter table public.email_logs force row level security;
+
+revoke all on table public.email_logs from public;
+revoke all on table public.email_logs from anon;
+revoke all on table public.email_logs from authenticated;
+grant select, insert, update on table public.email_logs to authenticated;
+
+drop policy if exists email_logs_admin_select on public.email_logs;
+create policy email_logs_admin_select
+  on public.email_logs
+  for select
+  to authenticated
+  using ((select private.is_admin()));
+
+drop policy if exists email_logs_insert_authenticated on public.email_logs;
+create policy email_logs_insert_authenticated
+  on public.email_logs
+  for insert
+  to authenticated
+  with check (true);
+
+drop policy if exists email_logs_admin_update on public.email_logs;
+create policy email_logs_admin_update
+  on public.email_logs
+  for update
+  to authenticated
+  using ((select private.is_admin()))
   with check ((select private.is_admin()));
