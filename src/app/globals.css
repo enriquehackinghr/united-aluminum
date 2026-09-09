@@ -1,0 +1,143 @@
+@import "tailwindcss";
+
+@theme {
+  /* Brand navy */
+  --color-navy-50: #eef2f8;
+  --color-navy-100: #d4dce9;
+  --color-navy-200: #a9b9d3;
+  --color-navy-300: #7e96bd;
+  --color-navy-400: #5373a7;
+  --color-navy-500: #335589;
+  --color-navy-600: #002868;
+  --color-navy-700: #001f4d;
+  --color-navy-800: #001633;
+  --color-navy-900: #000e22;
+  --color-navy-950: #000818;
+
+  /* Arizona flag colors */
+  --color-arizona-red: #bf0a30;
+  --color-arizona-gold: #fed700;
+  --color-arizona-copper: #c4622d;
+  --color-arizona-blue: #002868;
+
+  /* Desert sand & adobe */
+  --color-sand-50: #faf6f0;
+  --color-sand-100: #f0e8da;
+  --color-sand-200: #e2d4bc;
+  --color-sand-300: #cfba98;
+  --color-sand-400: #b89d72;
+  --color-sand-500: #9a7f56;
+  --color-sand-600: #7d6544;
+  --color-sand-700: #634f36;
+  --color-sand-800: #4f3f2b;
+  --color-sand-900: #3d3122;
+
+  --color-adobe-400: #d4845a;
+  --color-adobe-500: #c4704b;
+  --color-adobe-600: #a85832;
+
+  --color-sage-400: #8b9a6b;
+  --color-sage-500: #6d7a52;
+
+  /* Warm neutrals */
+  --color-mist-100: #f4f2ef;
+  --color-mist-200: #e8e4de;
+  --color-mist-300: #cfc8bc;
+  --color-mist-400: #a69e90;
+
+  --font-display: var(--font-outfit), system-ui, sans-serif;
+  --font-body: var(--font-dm-sans), system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body), system-ui, sans-serif;
+  background-color: var(--color-sand-50);
+  color: var(--color-navy-900);
+  background-image:
+    radial-gradient(ellipse 120% 80% at 100% 0%, color-mix(in srgb, var(--color-arizona-gold) 6%, transparent), transparent),
+    radial-gradient(ellipse 80% 60% at 0% 100%, color-mix(in srgb, var(--color-adobe-400) 5%, transparent), transparent);
+}
+
+::selection {
+  background-color: color-mix(in srgb, var(--color-arizona-gold) 40%, transparent);
+  color: var(--color-navy-900);
+}
+
+.gradient-text {
+  background: linear-gradient(
+    135deg,
+    var(--color-arizona-gold),
+    var(--color-arizona-copper),
+    var(--color-adobe-400)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-overlay {
+  background:
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--color-navy-950) 94%, transparent) 0%,
+      color-mix(in srgb, var(--color-navy-950) 82%, transparent) 28%,
+      color-mix(in srgb, var(--color-navy-900) 45%, transparent) 52%,
+      transparent 78%
+    ),
+    linear-gradient(
+      to top,
+      color-mix(in srgb, var(--color-navy-950) 70%, transparent) 0%,
+      transparent 45%
+    );
+}
+
+.hero-image-accent {
+  background: radial-gradient(
+    ellipse 90% 70% at 85% 40%,
+    color-mix(in srgb, var(--color-arizona-gold) 12%, transparent),
+    transparent 65%
+  );
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+.arizona-stripe {
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--color-arizona-red) 0%,
+    var(--color-arizona-red) 33%,
+    var(--color-arizona-gold) 33%,
+    var(--color-arizona-gold) 66%,
+    var(--color-navy-600) 66%,
+    var(--color-navy-600) 100%
+  );
+}
+
+.desert-section {
+  background-color: var(--color-sand-100);
+  background-image:
+    radial-gradient(circle at 20% 80%, color-mix(in srgb, var(--color-sage-400) 8%, transparent) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, color-mix(in srgb, var(--color-arizona-gold) 6%, transparent) 0%, transparent 40%);
+}
+
+.card-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-shine::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-arizona-gold) 6%, transparent) 0%,
+    transparent 50%
+  );
+  pointer-events: none;
+}
