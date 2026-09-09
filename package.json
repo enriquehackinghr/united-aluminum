@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev -p 3003",
     "build": "next build",
-    "start": "next start",
+    "start": "node scripts/start.mjs",
     "lint": "next lint",
     "inventory:import": "node scripts/generate-inventory.mjs"
   },
@@ -30,5 +30,8 @@
     "eslint-config-next": "^15.5.2",
     "tailwindcss": "^4.1.12",
     "typescript": "^5.9.2"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }
