@@ -88,6 +88,17 @@
     "asOf": "04/30/2025"
   },
   {
+    "sku": "5033-1",
+    "name": "1/2 X 4 1/2\" POWER STUD",
+    "category": "Do It Yourself",
+    "type": "Inventory",
+    "description": "1/2 X 4 1/2\" POWER STUC",
+    "price": 1.66,
+    "quantity": 225,
+    "taxable": true,
+    "asOf": "04/30/2025"
+  },
+  {
     "sku": "5165",
     "name": "1/4  MAGNETIC HEX DRIVER",
     "category": "Do It Yourself",
@@ -227,6 +238,17 @@
     "description": "25' MEASURING TAPE",
     "price": 6.18,
     "quantity": 12,
+    "taxable": true,
+    "asOf": "04/30/2025"
+  },
+  {
+    "sku": "5172",
+    "name": "3  EXTENSION",
+    "category": "Do It Yourself",
+    "type": "Inventory",
+    "description": "3  EXTENSION",
+    "price": 6.22,
+    "quantity": 0,
     "taxable": true,
     "asOf": "04/30/2025"
   },
@@ -1562,17 +1584,6 @@
     "asOf": "04/30/2025"
   },
   {
-    "sku": "UA-300",
-    "name": "Services",
-    "category": "Other",
-    "type": "Service",
-    "description": "Services",
-    "price": null,
-    "quantity": 0,
-    "taxable": false,
-    "asOf": "04/30/2025"
-  },
-  {
     "sku": "SHI",
     "name": "SHIPPING CHARGES",
     "category": "Other",
@@ -1716,39 +1727,6 @@
     "asOf": "04/30/2025"
   },
   {
-    "sku": "8412-10",
-    "name": "1-1/2  SQ TUBE x 10'",
-    "category": "Patio",
-    "type": "Inventory",
-    "description": "1-1/2  SQ TUBE x 10'",
-    "price": 22.01,
-    "quantity": 426,
-    "taxable": true,
-    "asOf": "04/30/2025"
-  },
-  {
-    "sku": "8412-12",
-    "name": "1-1/2  SQ TUBE x 12'",
-    "category": "Patio",
-    "type": "Inventory",
-    "description": "1-1/2  SQ TUBE x 12'",
-    "price": 26.39,
-    "quantity": 518,
-    "taxable": true,
-    "asOf": "04/30/2025"
-  },
-  {
-    "sku": "8412-09",
-    "name": "1-1/2  SQ TUBE X 9'",
-    "category": "Patio",
-    "type": "Inventory",
-    "description": "1-1/2  SQ TUBE X 9'",
-    "price": 19.8,
-    "quantity": 165,
-    "taxable": true,
-    "asOf": "04/30/2025"
-  },
-  {
     "sku": "7941",
     "name": "1-1/2  TUBE END CAP",
     "category": "Patio",
@@ -1771,17 +1749,6 @@
     "asOf": "04/30/2025"
   },
   {
-    "sku": "5033-1",
-    "name": "1/2 X 4 1/2\" POWER STUD",
-    "category": "Patio",
-    "type": "Inventory",
-    "description": "1/2 X 4 1/2\" POWER STUC",
-    "price": 1.66,
-    "quantity": 225,
-    "taxable": true,
-    "asOf": "04/30/2025"
-  },
-  {
     "sku": "7588",
     "name": "2  COLOR STRIP",
     "category": "Patio",
@@ -1800,6 +1767,17 @@
     "description": "2  END CAPS",
     "price": 1.49,
     "quantity": 107,
+    "taxable": true,
+    "asOf": "04/30/2025"
+  },
+  {
+    "sku": "7223-C",
+    "name": "2  H SCREEN SECTION PTD",
+    "category": "Patio",
+    "type": "Inventory",
+    "description": "2  H SCREEN SECTION PTD",
+    "price": 5.85,
+    "quantity": 96,
     "taxable": true,
     "asOf": "04/30/2025"
   },
@@ -2090,17 +2068,6 @@
     "asOf": "04/30/2025"
   },
   {
-    "sku": "5172",
-    "name": "3  EXTENSION",
-    "category": "Patio",
-    "type": "Inventory",
-    "description": "3  EXTENSION",
-    "price": 6.22,
-    "quantity": 0,
-    "taxable": true,
-    "asOf": "04/30/2025"
-  },
-  {
     "sku": "7635",
     "name": "3  FLANGED BRACKET/FLUTED POST WITH HARDWARE",
     "category": "Patio",
@@ -2119,17 +2086,6 @@
     "description": "3  FLANGED BRACKET/SM POST",
     "price": 11.53,
     "quantity": 10,
-    "taxable": true,
-    "asOf": "04/30/2025"
-  },
-  {
-    "sku": "3100",
-    "name": "3  FLEX PANS",
-    "category": "Patio",
-    "type": "Inventory",
-    "description": "3  FLEX PANS",
-    "price": 2.17,
-    "quantity": 7244,
     "taxable": true,
     "asOf": "04/30/2025"
   },
@@ -3190,124 +3146,14 @@
     "asOf": "04/30/2025"
   },
   {
-    "sku": "7223-C",
-    "name": "2  H SCREEN SECTION PTD",
-    "category": "Screen Rooms",
-    "type": "Inventory",
-    "description": "2  H SCREEN SECTION PTD",
-    "price": 5.85,
-    "quantity": 96,
-    "taxable": true,
-    "asOf": "04/30/2025"
-  },
-  {
-    "sku": "7258",
-    "name": "7/16\" BARREL CLIPS",
-    "category": "Screen Rooms",
-    "type": "Inventory",
-    "description": "7/16\" BARREL CLIPS",
-    "price": 0.56,
-    "quantity": 595,
-    "taxable": true,
-    "asOf": "04/30/2025"
-  },
-  {
-    "sku": "7257",
-    "name": "7/16\" X 1\" SCREEN FRAME X 12'2\"",
-    "category": "Screen Rooms",
-    "type": "Inventory",
-    "description": "7/16\" X 1\" SCREEN FRAME X 12'2\"",
-    "price": 16.2,
+    "sku": "UA-300",
+    "name": "Services",
+    "category": "Services",
+    "type": "Service",
+    "description": "Services",
+    "price": null,
     "quantity": 0,
-    "taxable": true,
-    "asOf": "04/30/2025"
-  },
-  {
-    "sku": "7259",
-    "name": "METAL SCREEN CORNERS",
-    "category": "Screen Rooms",
-    "type": "Inventory",
-    "description": "METAL SCREEN CORNERS",
-    "price": 0.58,
-    "quantity": 148,
-    "taxable": true,
-    "asOf": "04/30/2025"
-  },
-  {
-    "sku": "7260",
-    "name": "SCREEN ROLLER TOOL",
-    "category": "Screen Rooms",
-    "type": "Inventory",
-    "description": "SCREEN ROLLER TOOL",
-    "price": 9.25,
-    "quantity": 10,
-    "taxable": true,
-    "asOf": "04/30/2025"
-  },
-  {
-    "sku": "7250",
-    "name": "SCREEN SPLINE .170",
-    "category": "Screen Rooms",
-    "type": "Inventory",
-    "description": "SCREEN SPLINE .170",
-    "price": 0.14,
-    "quantity": 1450,
-    "taxable": true,
-    "asOf": "04/30/2025"
-  },
-  {
-    "sku": "7252",
-    "name": "SCREEN SPLINE .195",
-    "category": "Screen Rooms",
-    "type": "Inventory",
-    "description": "SCREEN SPLINE .195",
-    "price": 0.14,
-    "quantity": 2010,
-    "taxable": true,
-    "asOf": "04/30/2025"
-  },
-  {
-    "sku": "7253",
-    "name": "SCREEN SPLINE .205",
-    "category": "Screen Rooms",
-    "type": "Inventory",
-    "description": "SCREEN SPLINE .205",
-    "price": 0.14,
-    "quantity": 480,
-    "taxable": true,
-    "asOf": "04/30/2025"
-  },
-  {
-    "sku": "7253-1",
-    "name": "SCREEN SPLINE .210",
-    "category": "Screen Rooms",
-    "type": "Inventory",
-    "description": "SCREEN SPLINE .210",
-    "price": 0.14,
-    "quantity": 0,
-    "taxable": true,
-    "asOf": "04/30/2025"
-  },
-  {
-    "sku": "7251",
-    "name": "SCREEN SPLINE .225",
-    "category": "Screen Rooms",
-    "type": "Inventory",
-    "description": "SCREEN SPLINE .225",
-    "price": 0.14,
-    "quantity": 0,
-    "taxable": true,
-    "asOf": "04/30/2025"
-  },
-  {
-    "sku": "7254",
-    "name": "UNINSTALLED SUN SCREEN",
-    "category": "Screen Rooms",
-    "type": "Non-inventory",
-    "description": "UNINSTALLED SUN SCREEN",
-    "price": 0,
-    "quantity": 0,
-    "taxable": true,
+    "taxable": false,
     "asOf": "04/30/2025"
   },
   {
@@ -3373,6 +3219,39 @@
     "description": "1-1/2  SQ TUBE x  8'",
     "price": 17.59,
     "quantity": 113,
+    "taxable": true,
+    "asOf": "04/30/2025"
+  },
+  {
+    "sku": "8412-10",
+    "name": "1-1/2  SQ TUBE x 10'",
+    "category": "Sheds & Accessories",
+    "type": "Inventory",
+    "description": "1-1/2  SQ TUBE x 10'",
+    "price": 22.01,
+    "quantity": 426,
+    "taxable": true,
+    "asOf": "04/30/2025"
+  },
+  {
+    "sku": "8412-12",
+    "name": "1-1/2  SQ TUBE x 12'",
+    "category": "Sheds & Accessories",
+    "type": "Inventory",
+    "description": "1-1/2  SQ TUBE x 12'",
+    "price": 26.39,
+    "quantity": 518,
+    "taxable": true,
+    "asOf": "04/30/2025"
+  },
+  {
+    "sku": "8412-09",
+    "name": "1-1/2  SQ TUBE X 9'",
+    "category": "Sheds & Accessories",
+    "type": "Inventory",
+    "description": "1-1/2  SQ TUBE X 9'",
+    "price": 19.8,
+    "quantity": 165,
     "taxable": true,
     "asOf": "04/30/2025"
   },
@@ -4297,6 +4176,17 @@
     "description": "6 X 8 X 7 TREATED FLOOR",
     "price": 1763,
     "quantity": 0,
+    "taxable": true,
+    "asOf": "04/30/2025"
+  },
+  {
+    "sku": "8240",
+    "name": "6' CORNERS",
+    "category": "Sheds & Accessories",
+    "type": "Inventory",
+    "description": "6' CORNERS",
+    "price": 14.88,
+    "quantity": 1303,
     "taxable": true,
     "asOf": "04/30/2025"
   },
@@ -5676,17 +5566,6 @@
     "asOf": "04/30/2025"
   },
   {
-    "sku": "8240",
-    "name": "6' CORNERS",
-    "category": "Siding & Soffit",
-    "type": "Inventory",
-    "description": "6' CORNERS",
-    "price": 14.88,
-    "quantity": 1303,
-    "taxable": true,
-    "asOf": "04/30/2025"
-  },
-  {
     "sku": "4603-2",
     "name": "8  IND CORNER WHITE",
     "category": "Siding & Soffit",
@@ -6182,6 +6061,116 @@
     "asOf": "04/30/2025"
   },
   {
+    "sku": "7258",
+    "name": "7/16\" BARREL CLIPS",
+    "category": "Sun Screens",
+    "type": "Inventory",
+    "description": "7/16\" BARREL CLIPS",
+    "price": 0.56,
+    "quantity": 595,
+    "taxable": true,
+    "asOf": "04/30/2025"
+  },
+  {
+    "sku": "7257",
+    "name": "7/16\" X 1\" SCREEN FRAME X 12'2\"",
+    "category": "Sun Screens",
+    "type": "Inventory",
+    "description": "7/16\" X 1\" SCREEN FRAME X 12'2\"",
+    "price": 16.2,
+    "quantity": 0,
+    "taxable": true,
+    "asOf": "04/30/2025"
+  },
+  {
+    "sku": "7259",
+    "name": "METAL SCREEN CORNERS",
+    "category": "Sun Screens",
+    "type": "Inventory",
+    "description": "METAL SCREEN CORNERS",
+    "price": 0.58,
+    "quantity": 148,
+    "taxable": true,
+    "asOf": "04/30/2025"
+  },
+  {
+    "sku": "7260",
+    "name": "SCREEN ROLLER TOOL",
+    "category": "Sun Screens",
+    "type": "Inventory",
+    "description": "SCREEN ROLLER TOOL",
+    "price": 9.25,
+    "quantity": 10,
+    "taxable": true,
+    "asOf": "04/30/2025"
+  },
+  {
+    "sku": "7250",
+    "name": "SCREEN SPLINE .170",
+    "category": "Sun Screens",
+    "type": "Inventory",
+    "description": "SCREEN SPLINE .170",
+    "price": 0.14,
+    "quantity": 1450,
+    "taxable": true,
+    "asOf": "04/30/2025"
+  },
+  {
+    "sku": "7252",
+    "name": "SCREEN SPLINE .195",
+    "category": "Sun Screens",
+    "type": "Inventory",
+    "description": "SCREEN SPLINE .195",
+    "price": 0.14,
+    "quantity": 2010,
+    "taxable": true,
+    "asOf": "04/30/2025"
+  },
+  {
+    "sku": "7253",
+    "name": "SCREEN SPLINE .205",
+    "category": "Sun Screens",
+    "type": "Inventory",
+    "description": "SCREEN SPLINE .205",
+    "price": 0.14,
+    "quantity": 480,
+    "taxable": true,
+    "asOf": "04/30/2025"
+  },
+  {
+    "sku": "7253-1",
+    "name": "SCREEN SPLINE .210",
+    "category": "Sun Screens",
+    "type": "Inventory",
+    "description": "SCREEN SPLINE .210",
+    "price": 0.14,
+    "quantity": 0,
+    "taxable": true,
+    "asOf": "04/30/2025"
+  },
+  {
+    "sku": "7251",
+    "name": "SCREEN SPLINE .225",
+    "category": "Sun Screens",
+    "type": "Inventory",
+    "description": "SCREEN SPLINE .225",
+    "price": 0.14,
+    "quantity": 0,
+    "taxable": true,
+    "asOf": "04/30/2025"
+  },
+  {
+    "sku": "7254",
+    "name": "UNINSTALLED SUN SCREEN",
+    "category": "Sun Screens",
+    "type": "Non-inventory",
+    "description": "UNINSTALLED SUN SCREEN",
+    "price": 0,
+    "quantity": 0,
+    "taxable": true,
+    "asOf": "04/30/2025"
+  },
+  {
     "sku": "8425-13",
     "name": "024 X 4 3/8  CE WHITE",
     "category": "Window Awnings",
@@ -6189,6 +6178,17 @@
     "description": "024 X 4 3/8  CE WHITE",
     "price": 12.8,
     "quantity": 2595,
+    "taxable": true,
+    "asOf": "04/30/2025"
+  },
+  {
+    "sku": "3100",
+    "name": "3  FLEX PANS",
+    "category": "Window Awnings",
+    "type": "Inventory",
+    "description": "3  FLEX PANS",
+    "price": 2.17,
+    "quantity": 7244,
     "taxable": true,
     "asOf": "04/30/2025"
   },

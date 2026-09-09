@@ -1,12 +1,15 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { LoaderCircle, PackageSearch, Search } from "lucide-react";
+import { Check, PackageSearch, Search, ShoppingCart } from "lucide-react";
+import { QuantityStepper } from "@/components/cart/QuantityStepper";
+import { useCart } from "@/components/cart/CartProvider";
 import {
   formatPrice,
   formatQuantity,
   getCategories,
   getStockStatus,
+  isAvailableToOrder,
   type CatalogItem,
   type StockStatus,
 } from "@/lib/inventory";
@@ -49,6 +52,7 @@ export function InventoryCatalog({
   initialCategory?: string;
   initialQuery?: string;
 }) {
+  const { addItem } = useCart();
   const inventoryCategories = getCategories(items);
   const [query, setQuery] = useState(initialQuery ?? "");
   const [category, setCategory] = useState(
@@ -56,71 +60,63 @@ export function InventoryCatalog({
   );
   const [stock, setStock] = useState<"all" | StockStatus>("all");
   const [page, setPage] = useState(1);
-  const [quoteItem, setQuoteItem] = useState<CatalogItem | null>(null);
-  const [quotePending, setQuotePending] = useState(false);
-  const [quoteError, setQuoteError] = useState<string | null>(null);
-  const [quoteSent, setQuoteSent] = useState(false);
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [addedSku, setAddedSku] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    return items.filter((item) => {
-      const matchesQuery =
-        !needle ||
-        item.name.toLowerCase().includes(needle) ||
-        item.sku.toLowerCase().includes(needle) ||
-        item.description.toLowerCase().includes(needle);
-      const matchesCategory = category === "all" || item.category === category;
-      const matchesStock = stock === "all" || getStockStatus(item.quantity) === stock;
-      return matchesQuery && matchesCategory && matchesStock;
-    });
+    return items
+      .filter((item) => {
+        const matchesQuery =
+          !needle ||
+          item.name.toLowerCase().includes(needle) ||
+          item.sku.toLowerCase().includes(needle) ||
+          item.description.toLowerCase().includes(needle) ||
+          item.category.toLowerCase().includes(needle);
+        const matchesCategory = category === "all" || item.category === category;
+        const matchesStock = stock === "all" || getStockStatus(item.quantity) === stock;
+        return matchesQuery && matchesCategory && matchesStock;
+      })
+      .sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
   }, [items, query, category, stock]);
+
+  const categoryCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const item of filtered) {
+      counts.set(item.category, (counts.get(item.category) ?? 0) + 1);
+    }
+    return counts;
+  }, [filtered]);
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, pageCount);
   const visible = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  function quantityFor(sku: string) {
+    return quantities[sku] ?? 1;
+  }
 
   function updateFilter<T>(setter: (value: T) => void, value: T) {
     setter(value);
     setPage(1);
   }
 
-  function openQuote(item: CatalogItem) {
-    setQuoteItem(item);
-    setQuoteError(null);
-    setQuoteSent(false);
-  }
-
-  function closeQuote() {
-    if (quotePending) return;
-    setQuoteItem(null);
-    setQuoteError(null);
-    setQuoteSent(false);
-  }
-
-  async function confirmQuote() {
-    if (!quoteItem) return;
-    setQuotePending(true);
-    setQuoteError(null);
-
-    try {
-      const response = await fetch("/api/quote", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          product: quoteItem.name,
-          sku: quoteItem.sku,
-        }),
-      });
-      const payload = (await response.json().catch(() => null)) as { error?: string } | null;
-      if (!response.ok) {
-        throw new Error(payload?.error || "Could not send quote request.");
-      }
-      setQuoteSent(true);
-    } catch (error) {
-      setQuoteError(error instanceof Error ? error.message : "Could not send quote request.");
-    } finally {
-      setQuotePending(false);
-    }
+  function addToCart(item: CatalogItem) {
+    if (!isAvailableToOrder(item.quantity)) return;
+    const quantity = quantityFor(item.sku);
+    addItem(
+      {
+        sku: item.sku,
+        name: item.name,
+        category: item.category,
+        price: item.price,
+      },
+      quantity,
+    );
+    setAddedSku(item.sku);
+    window.setTimeout(() => {
+      setAddedSku((current) => (current === item.sku ? null : current));
+    }, 1800);
   }
 
   return (
@@ -133,7 +129,7 @@ export function InventoryCatalog({
               type="search"
               value={query}
               onChange={(event) => updateFilter(setQuery, event.target.value)}
-              placeholder="Search by name, SKU, or description"
+              placeholder="Search by name, SKU, category, or description"
               className="w-full rounded-xl border border-sand-200 bg-sand-50 py-3 pl-10 pr-4 text-sm text-navy-900 outline-none focus:border-navy-600 focus:bg-white focus:ring-2 focus:ring-navy-600/20"
             />
           </label>
@@ -177,6 +173,7 @@ export function InventoryCatalog({
             {Math.min(currentPage * PAGE_SIZE, filtered.length)}
           </span>{" "}
           of <span className="font-semibold text-navy-900">{filtered.length}</span> items
+          {category === "all" ? ", grouped by category" : ""}
         </p>
       </div>
 
@@ -189,33 +186,69 @@ export function InventoryCatalog({
       ) : (
         <>
           <div className="space-y-3 md:hidden">
-            {visible.map((item) => (
-              <article key={item.sku} className="rounded-2xl border border-sand-200 bg-white p-4 shadow-sm">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-navy-400">
-                      {item.category}
-                    </p>
-                    <h3 className="mt-1 font-display text-base font-bold text-navy-900">{item.name}</h3>
-                    <p className="mt-1 text-xs text-navy-500">SKU {item.sku}</p>
-                  </div>
-                  <StockBadge quantity={item.quantity} />
+            {visible.map((item, index) => {
+              const showHeader = index === 0 || visible[index - 1].category !== item.category;
+              return (
+                <div key={item.sku} className="space-y-3">
+                  {showHeader && (
+                    <div className="flex items-center justify-between px-1 pt-2">
+                      <h2 className="font-display text-lg font-bold text-navy-950">{item.category}</h2>
+                      <p className="text-xs font-semibold text-navy-500">
+                        {categoryCounts.get(item.category) ?? 0} items
+                      </p>
+                    </div>
+                  )}
+                  <article className="rounded-2xl border border-sand-200 bg-white p-4 shadow-sm">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h3 className="font-display text-base font-bold text-navy-900">{item.name}</h3>
+                        <p className="mt-1 text-xs text-navy-500">SKU {item.sku}</p>
+                      </div>
+                      <StockBadge quantity={item.quantity} />
+                    </div>
+                    <div className="mt-4 flex items-end justify-between gap-3">
+                      <div>
+                        <p className="font-semibold text-navy-900">{formatPrice(item.price)}</p>
+                        <p className="text-xs text-navy-500">
+                          {formatQuantity(item.quantity, null)} on hand
+                        </p>
+                      </div>
+                      <QuantityStepper
+                        size="sm"
+                        value={quantityFor(item.sku)}
+                        disabled={!isAvailableToOrder(item.quantity)}
+                        onChange={(value) =>
+                          setQuantities((current) => ({ ...current, [item.sku]: value }))
+                        }
+                        ariaLabel={`Quantity for ${item.name}`}
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      disabled={!isAvailableToOrder(item.quantity)}
+                      onClick={() => addToCart(item)}
+                      className={`mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold ${
+                        isAvailableToOrder(item.quantity)
+                          ? "bg-arizona-gold text-navy-900"
+                          : "cursor-not-allowed bg-sand-200 text-navy-400"
+                      }`}
+                    >
+                      {addedSku === item.sku ? (
+                        <>
+                          <Check className="h-3.5 w-3.5" />
+                          Added to cart
+                        </>
+                      ) : (
+                        <>
+                          <ShoppingCart className="h-3.5 w-3.5" />
+                          {isAvailableToOrder(item.quantity) ? "Add to cart" : "Out of stock"}
+                        </>
+                      )}
+                    </button>
+                  </article>
                 </div>
-                <div className="mt-4 flex items-center justify-between">
-                  <div>
-                    <p className="font-semibold text-navy-900">{formatPrice(item.price)}</p>
-                    <p className="text-xs text-navy-500">{formatQuantity(item.quantity, null)} on hand</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => openQuote(item)}
-                    className="rounded-xl bg-arizona-gold px-3 py-2 text-xs font-semibold text-navy-900"
-                  >
-                    Request quote
-                  </button>
-                </div>
-              </article>
-            ))}
+              );
+            })}
           </div>
 
           <div className="hidden overflow-hidden rounded-2xl border border-sand-200 bg-white shadow-sm md:block">
@@ -223,43 +256,32 @@ export function InventoryCatalog({
               <thead className="bg-navy-950 text-xs uppercase tracking-wider text-mist-200">
                 <tr>
                   <th className="px-4 py-3 font-semibold">Item</th>
-                  <th className="px-4 py-3 font-semibold">Category</th>
                   <th className="px-4 py-3 font-semibold">SKU</th>
                   <th className="px-4 py-3 font-semibold">Price</th>
-                  <th className="px-4 py-3 font-semibold">Qty</th>
+                  <th className="px-4 py-3 font-semibold">On hand</th>
                   <th className="px-4 py-3 font-semibold">Status</th>
+                  <th className="px-4 py-3 font-semibold">Quantity</th>
                   <th className="px-4 py-3 font-semibold"> </th>
                 </tr>
               </thead>
               <tbody>
-                {visible.map((item) => (
-                  <tr key={item.sku} className="border-t border-sand-100 hover:bg-sand-50/80">
-                    <td className="px-4 py-3">
-                      <p className="font-medium text-navy-900">{item.name}</p>
-                      {item.description !== item.name && (
-                        <p className="mt-0.5 max-w-md truncate text-xs text-navy-500">
-                          {item.description}
-                        </p>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-navy-600">{item.category}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-navy-600">{item.sku}</td>
-                    <td className="px-4 py-3 font-semibold text-navy-900">{formatPrice(item.price)}</td>
-                    <td className="px-4 py-3 text-navy-700">{formatQuantity(item.quantity, null)}</td>
-                    <td className="px-4 py-3">
-                      <StockBadge quantity={item.quantity} />
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <button
-                        type="button"
-                        onClick={() => openQuote(item)}
-                        className="inline-flex rounded-lg bg-arizona-gold px-3 py-1.5 text-xs font-semibold text-navy-900 hover:bg-arizona-gold/90"
-                      >
-                        Quote
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {visible.map((item, index) => {
+                  const showHeader = index === 0 || visible[index - 1].category !== item.category;
+                  return (
+                    <CatalogRow
+                      key={item.sku}
+                      item={item}
+                      showHeader={showHeader}
+                      categoryCount={categoryCounts.get(item.category) ?? 0}
+                      quantity={quantityFor(item.sku)}
+                      added={addedSku === item.sku}
+                      onQuantityChange={(value) =>
+                        setQuantities((current) => ({ ...current, [item.sku]: value }))
+                      }
+                      onAdd={() => addToCart(item)}
+                    />
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -289,83 +311,80 @@ export function InventoryCatalog({
           </button>
         </div>
       )}
+    </div>
+  );
+}
 
-      {quoteItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+function CatalogRow({
+  item,
+  showHeader,
+  categoryCount,
+  quantity,
+  added,
+  onQuantityChange,
+  onAdd,
+}: {
+  item: CatalogItem;
+  showHeader: boolean;
+  categoryCount: number;
+  quantity: number;
+  added: boolean;
+  onQuantityChange: (value: number) => void;
+  onAdd: () => void;
+}) {
+  const available = isAvailableToOrder(item.quantity);
+  return (
+    <>
+      {showHeader && (
+        <tr className="border-t border-sand-200 bg-sand-100">
+          <td colSpan={7} className="px-4 py-3">
+            <div className="flex items-center justify-between gap-3">
+              <p className="font-display text-sm font-bold text-navy-950">{item.category}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-navy-500">
+                {categoryCount} items
+              </p>
+            </div>
+          </td>
+        </tr>
+      )}
+      <tr className="border-t border-sand-100 hover:bg-sand-50/80">
+        <td className="px-4 py-3">
+          <p className="font-medium text-navy-900">{item.name}</p>
+          {item.description !== item.name && (
+            <p className="mt-0.5 max-w-md truncate text-xs text-navy-500">{item.description}</p>
+          )}
+        </td>
+        <td className="px-4 py-3 font-mono text-xs text-navy-600">{item.sku}</td>
+        <td className="px-4 py-3 font-semibold text-navy-900">{formatPrice(item.price)}</td>
+        <td className="px-4 py-3 text-navy-700">{formatQuantity(item.quantity, null)}</td>
+        <td className="px-4 py-3">
+          <StockBadge quantity={item.quantity} />
+        </td>
+        <td className="px-4 py-3">
+          <QuantityStepper
+            size="sm"
+            value={quantity}
+            disabled={!available}
+            onChange={onQuantityChange}
+            ariaLabel={`Quantity for ${item.name}`}
+          />
+        </td>
+        <td className="px-4 py-3 text-right">
           <button
             type="button"
-            aria-label="Close quote confirmation"
-            className="absolute inset-0 bg-navy-950/60"
-            onClick={closeQuote}
-          />
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="quote-confirm-title"
-            className="relative w-full max-w-md rounded-2xl border border-sand-200 bg-white p-6 shadow-xl"
+            disabled={!available}
+            onClick={onAdd}
+            className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold ${
+              available
+                ? "bg-arizona-gold text-navy-900 hover:bg-arizona-gold/90"
+                : "cursor-not-allowed bg-sand-200 text-navy-400"
+            }`}
           >
-            {quoteSent ? (
-              <>
-                <p className="text-sm font-semibold uppercase tracking-widest text-arizona-copper">
-                  Quote requested
-                </p>
-                <h2 id="quote-confirm-title" className="mt-2 font-display text-2xl font-bold text-navy-950">
-                  We received your request
-                </h2>
-                <p className="mt-2 text-sm text-navy-600">
-                  A quote request for <span className="font-semibold text-navy-900">{quoteItem.name}</span> was
-                  sent. We&apos;ll follow up shortly.
-                </p>
-                <button
-                  type="button"
-                  onClick={closeQuote}
-                  className="mt-6 w-full rounded-xl bg-navy-950 px-4 py-3 text-sm font-semibold text-white"
-                >
-                  Close
-                </button>
-              </>
-            ) : (
-              <>
-                <p className="text-sm font-semibold uppercase tracking-widest text-arizona-copper">
-                  Quote request
-                </p>
-                <h2 id="quote-confirm-title" className="mt-2 font-display text-2xl font-bold text-navy-950">
-                  Confirm you need a quote
-                </h2>
-                <p className="mt-2 text-sm text-navy-600">
-                  We&apos;ll email the team about{" "}
-                  <span className="font-semibold text-navy-900">{quoteItem.name}</span>
-                  {quoteItem.sku ? ` (SKU ${quoteItem.sku})` : ""}.
-                </p>
-                {quoteError && (
-                  <p className="mt-4 rounded-xl border border-arizona-red/20 bg-arizona-red/5 px-4 py-3 text-sm text-arizona-red">
-                    {quoteError}
-                  </p>
-                )}
-                <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-                  <button
-                    type="button"
-                    onClick={closeQuote}
-                    disabled={quotePending}
-                    className="rounded-xl border border-sand-200 bg-white px-4 py-2.5 text-sm font-semibold text-navy-800 disabled:opacity-40"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    onClick={confirmQuote}
-                    disabled={quotePending}
-                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-arizona-gold px-4 py-2.5 text-sm font-semibold text-navy-900 disabled:opacity-60"
-                  >
-                    {quotePending && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                    Confirm quote
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
+            {added ? <Check className="h-3.5 w-3.5" /> : <ShoppingCart className="h-3.5 w-3.5" />}
+            {added ? "Added" : available ? "Add to cart" : "Out of stock"}
+          </button>
+        </td>
+      </tr>
+    </>
   );
 }

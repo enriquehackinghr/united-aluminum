@@ -21,19 +21,37 @@ const SKIP_EXACT = new Set([
 const CATEGORY_LABELS = {
   DIY: "Do It Yourself",
   Extrusion: "Extrusions",
+  Extrusions: "Extrusions",
   Patio: "Patio",
   "Screen/Rooms": "Screen Rooms",
+  "Sun Screens": "Sun Screens",
   "Sheds & Shed Accessories": "Sheds & Accessories",
   "Sheet metal work": "Sheet Metal",
+  "Sheet metal": "Sheet Metal",
   "Siding & soffit": "Siding & Soffit",
+  "Siding and Soffit": "Siding & Soffit",
   Skirting: "Skirting",
   "Window Awnings": "Window Awnings",
+  "Miscellaneous Income": "Miscellaneous",
+  Services: "Services",
 };
 
 function categoryFromName(name) {
   if (!name.includes(":")) return "Other";
   const prefix = name.split(":")[0];
   return CATEGORY_LABELS[prefix] ?? prefix;
+}
+
+function categoryFromIncomeAccount(value) {
+  const text = String(value ?? "").trim();
+  if (!text || /bad debt|discounts given/i.test(text)) return null;
+
+  const label = text.includes(":")
+    ? text.slice(text.lastIndexOf(":") + 1).trim()
+    : text.replace(/^\d[\d-]*\s*/, "").trim();
+
+  if (!label || /^sales of product income$/i.test(label)) return null;
+  return CATEGORY_LABELS[label] ?? label;
 }
 
 function displayName(name) {
@@ -71,11 +89,13 @@ for (const row of rows) {
 
   const name = displayName(rawName);
   const description = String(row["Sales Description"] ?? "").trim() || name;
+  const category =
+    categoryFromIncomeAccount(row["Income Account"]) ?? categoryFromName(rawName);
 
   items.push({
     sku,
     name,
-    category: categoryFromName(rawName),
+    category,
     type: row.Type || "Inventory",
     description,
     price: toNumber(row["Sales Price / Rate"]),
