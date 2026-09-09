@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, LogOut, PackageSearch, Shield, UserRound } from "lucide-react";
+import { LayoutDashboard, LogOut, PackageSearch, Shield, ShoppingCart, UserRound } from "lucide-react";
+import { useCart } from "@/components/cart/CartProvider";
 
 const links = [
   { href: "/account", label: "Overview", icon: LayoutDashboard },
   { href: "/account/inventory", label: "Inventory catalog", icon: PackageSearch },
+  { href: "/account/cart", label: "Cart", icon: ShoppingCart },
   { href: "/account/settings", label: "Account", icon: UserRound },
 ];
 
@@ -20,6 +22,8 @@ export function DashboardSidebar({
   isAdmin?: boolean;
 }) {
   const pathname = usePathname();
+  const { itemCount, ready } = useCart();
+  const cartCount = ready ? itemCount : 0;
 
   return (
     <>
@@ -54,7 +58,12 @@ export function DashboardSidebar({
                   }`}
                 >
                   <Icon className="h-4 w-4" />
-                  {link.label}
+                  <span className="flex-1">{link.label}</span>
+                  {link.href === "/account/cart" && cartCount > 0 && (
+                    <span className="rounded-full bg-arizona-gold px-2 py-0.5 text-[10px] font-bold text-navy-900">
+                      {cartCount > 99 ? "99+" : cartCount}
+                    </span>
+                  )}
                 </Link>
               );
             })}
@@ -91,6 +100,7 @@ export function DashboardSidebar({
                 }`}
               >
                 {link.label}
+                {link.href === "/account/cart" && cartCount > 0 ? ` (${cartCount})` : ""}
               </Link>
             );
           })}

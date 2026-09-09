@@ -209,6 +209,7 @@ export function InventoryDashboard({ initialItems, initialUpload }: InventoryDas
                     <th className="py-2 pr-4 font-medium">SKU</th>
                     <th className="py-2 pr-4 font-medium">Name</th>
                     <th className="py-2 pr-4 font-medium">Category</th>
+                    <th className="py-2 pr-4 font-medium">Price</th>
                     <th className="py-2 font-medium">Qty</th>
                   </tr>
                 </thead>
@@ -218,6 +219,7 @@ export function InventoryDashboard({ initialItems, initialUpload }: InventoryDas
                       <td className="py-2 pr-4">{row.sku || "—"}</td>
                       <td className="py-2 pr-4">{row.name}</td>
                       <td className="py-2 pr-4">{row.category || "—"}</td>
+                      <td className="py-2 pr-4">{formatPrice(row.price)}</td>
                       <td className="py-2">{formatQuantity(row.quantity)}</td>
                     </tr>
                   ))}

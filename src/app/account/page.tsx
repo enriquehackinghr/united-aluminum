@@ -36,7 +36,7 @@ export default async function AccountOverviewPage() {
           <div>
             <h1 className="font-display text-3xl font-bold md:text-4xl">Welcome back, {firstName}</h1>
             <p className="mt-2 max-w-xl text-mist-200">
-              Browse live inventory, check stock, and send a quote request for sheds, patio, and building products.
+              Browse live inventory by category, check prices and stock, and add what you need to your cart.
             </p>
           </div>
           <Button href="/account/inventory" size="sm">
@@ -71,7 +71,7 @@ export default async function AccountOverviewPage() {
           <div className="flex items-center justify-between gap-3">
             <div>
               <h2 className="font-display text-xl font-bold text-navy-950">High-stock items</h2>
-              <p className="mt-1 text-sm text-navy-600">Ready to quote from the live inventory catalog.</p>
+              <p className="mt-1 text-sm text-navy-600">Priced items with the most stock on hand.</p>
             </div>
             <Link href="/account/inventory" className="text-sm font-semibold text-navy-800 hover:text-navy-600">
               View all

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Sans, Outfit } from "next/font/google";
+import { Providers } from "@/components/Providers";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -44,7 +45,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${outfit.variable} ${dmSans.variable}`}>
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

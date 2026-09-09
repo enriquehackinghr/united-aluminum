@@ -53,16 +53,24 @@ const SKIP_EXACT = new Set([
 const CATEGORY_LABELS: Record<string, string> = {
   DIY: "Do It Yourself",
   Extrusion: "Extrusions",
+  Extrusions: "Extrusions",
   Patio: "Patio",
   "Screen/Rooms": "Screen Rooms",
+  "Sun Screens": "Sun Screens",
   "Sheds & Shed Accessories": "Sheds & Accessories",
   "Sheet metal work": "Sheet Metal",
+  "Sheet metal": "Sheet Metal",
   "Siding & soffit": "Siding & Soffit",
+  "Siding and Soffit": "Siding & Soffit",
   Skirting: "Skirting",
   "Window Awnings": "Window Awnings",
+  "Miscellaneous Income": "Miscellaneous",
+  Services: "Services",
 };
 
-const HEADER_ALIASES: Record<string, keyof ParsedInventoryRow | "rawName"> = {
+type MappedField = keyof ParsedInventoryRow | "rawName" | "incomeAccount";
+
+const HEADER_ALIASES: Record<string, MappedField> = {
   sku: "sku",
   "item sku": "sku",
   "item #": "sku",
@@ -83,9 +91,15 @@ const HEADER_ALIASES: Record<string, keyof ParsedInventoryRow | "rawName"> = {
   category: "category",
   group: "category",
   line: "category",
+  "income account": "incomeAccount",
+  "product category": "category",
+  "item category": "category",
   type: "type",
   "product type": "type",
   "item type": "type",
+  "inventory type": "type",
+  "inventory non inventory": "type",
+  "inventory noninventory": "type",
   description: "description",
   details: "description",
   notes: "description",
@@ -114,6 +128,16 @@ export function getCategories(items: CatalogItem[]) {
   return [...new Set(items.map((item) => item.category))].sort();
 }
 
+export function groupCatalogByCategory(items: CatalogItem[]) {
+  const groups = new Map<string, CatalogItem[]>();
+  for (const item of items) {
+    const list = groups.get(item.category) ?? [];
+    list.push(item);
+    groups.set(item.category, list);
+  }
+  return [...groups.entries()].sort(([a], [b]) => a.localeCompare(b));
+}
+
 export function getInventoryStats(items: CatalogItem[]) {
   const categories = getCategories(items);
   return {
@@ -131,6 +155,23 @@ export function getStockStatus(quantity: number): StockStatus {
   if (quantity <= 0) return "out";
   if (quantity < 10) return "low";
   return "in-stock";
+}
+
+export function isAvailableToOrder(quantity: number) {
+  return quantity > 0;
+}
+
+export function isInventoryType(type: string | null | undefined) {
+  const normalized = (type ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ");
+  return normalized === "inventory";
+}
+
+export function onlyInventoryItems(items: CatalogItem[]) {
+  return items.filter((item) => isInventoryType(item.type));
 }
 
 export function formatPrice(price: number | null) {
@@ -190,6 +231,18 @@ function categoryFromName(name: string) {
   if (!name.includes(":")) return "Other";
   const prefix = name.split(":")[0];
   return CATEGORY_LABELS[prefix] ?? prefix;
+}
+
+function categoryFromIncomeAccount(value: string) {
+  const text = value.trim();
+  if (!text || /bad debt|discounts given/i.test(text)) return null;
+
+  const label = text.includes(":")
+    ? text.slice(text.lastIndexOf(":") + 1).trim()
+    : text.replace(/^\d[\d-]*\s*/, "").trim();
+
+  if (!label || /^sales of product income$/i.test(label)) return null;
+  return CATEGORY_LABELS[label] ?? label;
 }
 
 function displayName(name: string) {
@@ -263,6 +316,7 @@ export function parseInventorySheet(rows: unknown[][]) {
     };
 
     let rawName: string | null = null;
+    let incomeAccount: string | null = null;
 
     headers.forEach((header, index) => {
       const field = mapped[index];
@@ -275,6 +329,11 @@ export function parseInventorySheet(rows: unknown[][]) {
 
       if (field === "rawName") {
         rawName = asText(value);
+        return;
+      }
+
+      if (field === "incomeAccount") {
+        incomeAccount = asText(value);
         return;
       }
 
@@ -301,7 +360,9 @@ export function parseInventorySheet(rows: unknown[][]) {
       }
 
       const text = asText(value);
-      if (text) record[field] = text;
+      if (text && (field === "sku" || field === "name" || field === "category" || field === "type" || field === "description")) {
+        record[field] = text;
+      }
     });
 
     extraIndexes.forEach(({ header, index }) => {
@@ -310,15 +371,21 @@ export function parseInventorySheet(rows: unknown[][]) {
     });
 
     const sourceName = rawName ?? record.name;
+    const incomeCategory = incomeAccount ? categoryFromIncomeAccount(incomeAccount) : null;
+    if (incomeAccount) record.attributes["Income Account"] = incomeAccount;
+
     if (isQuickBooks && sourceName) {
       if (SKIP_EXACT.has(sourceName.toLowerCase()) || /\*\*\*do not use\*\*\*/i.test(sourceName)) {
         continue;
       }
       if (record.sku.toUpperCase().startsWith("DNU")) continue;
-      if (!record.category || record.category === "Other") {
-        record.category = categoryFromName(sourceName);
-      }
       record.name = displayName(sourceName);
+    }
+
+    if (incomeCategory) {
+      record.category = incomeCategory;
+    } else if (isQuickBooks && sourceName && (!record.category || record.category === "Other")) {
+      record.category = categoryFromName(sourceName);
     }
 
     if (!record.name) {

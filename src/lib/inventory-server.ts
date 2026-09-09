@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import {
   inventoryCatalog,
+  onlyInventoryItems,
   toCatalogItem,
   type CatalogItem,
   type InventoryUpload,
@@ -14,11 +15,8 @@ export async function getLiveInventory(): Promise<CatalogItem[]> {
     .order("category", { ascending: true })
     .order("name", { ascending: true });
 
-  if (error || !data?.length) {
-    return inventoryCatalog;
-  }
-
-  return data.map((row) => toCatalogItem(row));
+  const items = error || !data?.length ? inventoryCatalog : data.map((row) => toCatalogItem(row));
+  return onlyInventoryItems(items);
 }
 
 export async function getInventoryUpload(): Promise<InventoryUpload | null> {

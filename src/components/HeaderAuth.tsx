@@ -6,6 +6,7 @@ import type { User } from "@supabase/supabase-js";
 import { isAdminEmail } from "@/lib/admin";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "./Button";
+import { CartLink } from "./cart/CartLink";
 
 export function HeaderAuth({
   onNavigate,
@@ -77,6 +78,7 @@ export function HeaderAuth({
         >
           Catalog
         </Link>
+        <CartLink compact={compact} onNavigate={onNavigate} />
         <Link
           href="/account"
           onClick={onNavigate}
