@@ -45,7 +45,7 @@ export function Gallery() {
         </div>
 
         <p className="mt-8 text-center text-sm text-mist-400">
-          Photos shown are representative. Contact us to see examples of our actual installations.
+          Photos from United Aluminum installations across the Phoenix metro.
         </p>
       </div>
     </section>
