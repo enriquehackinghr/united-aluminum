@@ -1,4 +1,12 @@
 import { Resend } from "resend";
+import {
+  CEO_EMAIL,
+  inventoryBriefingHtml,
+  inventoryBriefingSubject,
+  inventoryBriefingText,
+  type InventoryReview,
+} from "./chief-of-staff";
+import { logEmail } from "./email-log";
 
 const QUOTE_INBOX = "enrique@hackinghr.io";
 
@@ -12,6 +20,10 @@ function getFromEmail() {
 
 export function getQuoteInbox() {
   return process.env.QUOTE_REQUEST_EMAIL?.trim() || QUOTE_INBOX;
+}
+
+export function getCeoEmail() {
+  return process.env.CEO_EMAIL?.trim() || CEO_EMAIL;
 }
 
 function escapeHtml(value: string) {
@@ -59,23 +71,49 @@ export async function sendWelcomeEmail({
 }) {
   const resend = new Resend(getResendApiKey());
   const safeName = name.trim() || "there";
-
-  const { error } = await resend.emails.send({
-    from: getFromEmail(),
-    to: email,
-    subject: "Your United Aluminum account is ready",
-    html: emailLayout(
-      "Account created",
-      `<p>Hi ${escapeHtml(safeName)},</p>
+  const subject = "Your United Aluminum account is ready";
+  const html = emailLayout(
+    "Account created",
+    `<p>Hi ${escapeHtml(safeName)},</p>
        <p>Your United Aluminum customer account was created successfully. You can now sign in, browse live inventory, and request quotes for sheds, patio, and building products.</p>
        <p style="margin:24px 0 0;">If you did not create this account, you can ignore this email.</p>
        <p style="margin:24px 0 0;">— United Aluminum</p>`,
-    ),
-    text: `Hi ${safeName},\n\nYour United Aluminum customer account was created successfully. You can now sign in, browse live inventory, and request quotes.\n\n— United Aluminum`,
-  });
+  );
+  const text = `Hi ${safeName},\n\nYour United Aluminum customer account was created successfully. You can now sign in, browse live inventory, and request quotes.\n\n— United Aluminum`;
 
-  if (error) {
-    throw new Error(error.message);
+  try {
+    const { data, error } = await resend.emails.send({
+      from: getFromEmail(),
+      to: email,
+      subject,
+      html,
+      text,
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    await logEmail({
+      action: "Account created",
+      recipient: email,
+      subject,
+      status: "sent",
+      html,
+      text,
+      providerId: data?.id,
+    });
+  } catch (error) {
+    await logEmail({
+      action: "Account created",
+      recipient: email,
+      subject,
+      status: "failed",
+      error: error instanceof Error ? error.message : "Could not send welcome email.",
+      html,
+      text,
+    });
+    throw error;
   }
 }
 
@@ -93,24 +131,118 @@ export async function sendQuoteRequestEmail({
   const resend = new Resend(getResendApiKey());
   const skuLine = sku ? `<p style="margin:8px 0 0;"><strong>SKU:</strong> ${escapeHtml(sku)}</p>` : "";
   const skuText = sku ? `\nSKU: ${sku}` : "";
-
-  const { error } = await resend.emails.send({
-    from: getFromEmail(),
-    to: getQuoteInbox(),
-    replyTo: email,
-    subject: `Quote request: ${product}`,
-    html: emailLayout(
-      "New catalog quote request",
-      `<p>A customer requested a quote from the inventory catalog.</p>
+  const recipient = getQuoteInbox();
+  const subject = `Quote request: ${product}`;
+  const html = emailLayout(
+    "New catalog quote request",
+    `<p>A customer requested a quote from the inventory catalog.</p>
        <p style="margin:20px 0 0;"><strong>Name:</strong> ${escapeHtml(name)}</p>
        <p style="margin:8px 0 0;"><strong>Email:</strong> ${escapeHtml(email)}</p>
        <p style="margin:8px 0 0;"><strong>Product:</strong> ${escapeHtml(product)}</p>
        ${skuLine}`,
-    ),
-    text: `A customer requested a quote from the inventory catalog.\n\nName: ${name}\nEmail: ${email}\nProduct: ${product}${skuText}`,
-  });
+  );
+  const text = `A customer requested a quote from the inventory catalog.\n\nName: ${name}\nEmail: ${email}\nProduct: ${product}${skuText}`;
+  const metadata = { customerEmail: email, customerName: name, product, sku: sku ?? null };
 
-  if (error) {
-    throw new Error(error.message);
+  try {
+    const { data, error } = await resend.emails.send({
+      from: getFromEmail(),
+      to: recipient,
+      replyTo: email,
+      subject,
+      html,
+      text,
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    await logEmail({
+      action: "Catalog quote request",
+      recipient,
+      subject,
+      status: "sent",
+      html,
+      text,
+      providerId: data?.id,
+      metadata,
+    });
+  } catch (error) {
+    await logEmail({
+      action: "Catalog quote request",
+      recipient,
+      subject,
+      status: "failed",
+      error: error instanceof Error ? error.message : "Could not send quote request.",
+      html,
+      text,
+      metadata,
+    });
+    throw error;
+  }
+}
+
+export async function sendInventoryBriefingEmail(review: InventoryReview) {
+  const apiKey = getResendApiKey();
+  if (!apiKey) {
+    throw new Error("Resend is not configured. Add RESEND_API_KEY to send the CEO briefing.");
+  }
+
+  const resend = new Resend(apiKey);
+  const to = getCeoEmail();
+  const subject = inventoryBriefingSubject(review);
+  const html = inventoryBriefingHtml(review);
+  const text = inventoryBriefingText(review);
+  const metadata = {
+    inStock: review.inStock,
+    lowStock: review.lowStock,
+    outOfStock: review.outOfStock,
+    total: review.total,
+  };
+
+  try {
+    const sendPromise = resend.emails.send({
+      from: getFromEmail(),
+      to,
+      subject,
+      html,
+      text,
+    });
+
+    const { data, error } = await Promise.race([
+      sendPromise,
+      new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error("The CEO email timed out. Try Check Inventory again.")), 20_000);
+      }),
+    ]);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    await logEmail({
+      action: "Check Inventory",
+      recipient: to,
+      subject,
+      status: "sent",
+      html,
+      text,
+      providerId: data?.id,
+      metadata,
+    });
+    return to;
+  } catch (error) {
+    await logEmail({
+      action: "Check Inventory",
+      recipient: to,
+      subject,
+      status: "failed",
+      error: error instanceof Error ? error.message : "Could not send inventory briefing.",
+      html,
+      text,
+      metadata,
+    });
+    throw error;
   }
 }

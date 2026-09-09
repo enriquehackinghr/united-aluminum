@@ -140,10 +140,12 @@ export function groupCatalogByCategory(items: CatalogItem[]) {
 
 export function getInventoryStats(items: CatalogItem[]) {
   const categories = getCategories(items);
+  const inStock = items.filter((item) => item.quantity > 0).length;
   return {
     total: items.length,
-    inStock: items.filter((item) => item.quantity > 0).length,
+    inStock,
     lowStock: items.filter((item) => item.quantity > 0 && item.quantity < 10).length,
+    outOfStock: items.length - inStock,
     categories: categories.length,
   };
 }

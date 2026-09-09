@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { InventoryDashboard } from "@/components/InventoryDashboard";
 import { isAdminEmail } from "@/lib/admin";
+import { getEmailLogs } from "@/lib/email-log";
 import { toCatalogItem } from "@/lib/inventory";
 import { getInventoryUpload } from "@/lib/inventory-server";
 import { createClient } from "@/lib/supabase/server";
@@ -26,13 +27,14 @@ export default async function AdminPage() {
     redirect("/account");
   }
 
-  const [itemsResult, lastUpload] = await Promise.all([
+  const [itemsResult, lastUpload, emailLogs] = await Promise.all([
     supabase
       .from("inventory_items")
       .select("*")
       .order("category", { ascending: true })
       .order("name", { ascending: true }),
     getInventoryUpload(),
+    getEmailLogs(),
   ]);
 
   const importedItems = itemsResult.error ? [] : (itemsResult.data ?? []).map((row) => toCatalogItem(row));
@@ -46,10 +48,10 @@ export default async function AdminPage() {
             Administration
           </p>
           <h1 className="font-display text-4xl font-bold text-white md:text-5xl">
-            Inventory Dashboard
+            Admin Dashboard
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-mist-200">
-            Upload a CSV or Excel file to replace the live United Aluminum inventory catalog.
+            Switch between inventory and the email log to review stock, briefings, and every message that went out.
           </p>
         </div>
       </section>
@@ -59,6 +61,7 @@ export default async function AdminPage() {
           <InventoryDashboard
             initialItems={importedItems}
             initialUpload={lastUpload}
+            initialEmailLogs={emailLogs}
           />
         </div>
       </section>
