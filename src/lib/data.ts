@@ -49,8 +49,7 @@ export const products = [
       "HOA-friendly customization",
       "Never rots, rusts, or corrodes",
     ],
-    image:
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&q=80",
+    image: "/images/shed.jpg",
     href: "/products/storage-sheds",
     featured: true,
   },
@@ -67,8 +66,7 @@ export const products = [
       "Lifetime durability",
       "Increases home value",
     ],
-    image:
-      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200&q=80",
+    image: "/images/pergola.jpg",
     href: "/products/pergolas",
     featured: true,
   },
@@ -85,8 +83,7 @@ export const products = [
       "Custom sizing available",
       "Built for desert heat",
     ],
-    image:
-      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=1200&q=80",
+    image: "/images/patio-cover.jpg",
     href: "/products/patio-covers",
     featured: true,
   },
@@ -103,8 +100,7 @@ export const products = [
       "Aluminum frame construction",
       "Custom configurations",
     ],
-    image:
-      "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=1200&q=80",
+    image: "/images/screen-room.jpg",
     href: "/products/screen-rooms",
     featured: false,
   },
@@ -121,8 +117,7 @@ export const products = [
       "Exterior-mounted efficiency",
       "Multiple style options",
     ],
-    image:
-      "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1200&q=80",
+    image: "/images/sun-screens.jpg",
     href: "/products/sun-screens",
     featured: false,
   },
@@ -139,8 +134,7 @@ export const products = [
       "Durable aluminum build",
       "Custom fit available",
     ],
-    image:
-      "https://images.unsplash.com/photo-1600210492493-0946911123ea?w=1200&q=80",
+    image: "/images/awning.jpg",
     href: "/products/window-awnings",
     featured: false,
   },
@@ -157,8 +151,7 @@ export const products = [
       "Long-lasting protection",
       "Improves home appearance",
     ],
-    image:
-      "https://images.unsplash.com/photo-1600573472592-401b489a3cdc?w=1200&q=80",
+    image: "/images/siding.jpg",
     href: "/products/siding-soffit",
     featured: false,
   },
@@ -175,8 +168,7 @@ export const products = [
       "Prevents wood rot",
       "Precision fabrication",
     ],
-    image:
-      "https://images.unsplash.com/photo-1600607687644-c7171b42498f?w=1200&q=80",
+    image: "/images/fascia.jpg",
     href: "/products/fascia",
     featured: false,
   },
@@ -193,8 +185,7 @@ export const products = [
       "Mill finish available",
       "Contractor-friendly service",
     ],
-    image:
-      "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=1200&q=80",
+    image: "/images/custom-metal.jpg",
     href: "/products/custom-metal",
     featured: false,
   },
@@ -290,34 +281,34 @@ export const faqs = [
 
 export const galleryImages = [
   {
-    src: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80",
-    alt: "Modern backyard storage shed",
+    src: "/images/storage-buildings.jpg",
+    alt: "Aluminum storage shed installed in a Phoenix backyard",
     category: "Sheds",
   },
   {
-    src: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80",
-    alt: "Outdoor pergola with seating area",
+    src: "/images/pergola.jpg",
+    alt: "Custom aluminum pergola over an outdoor kitchen",
     category: "Pergolas",
   },
   {
-    src: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&q=80",
-    alt: "Patio cover over outdoor living space",
+    src: "/images/patio-cover.jpg",
+    alt: "Solid-roof aluminum patio cover beside a pool",
     category: "Patio Covers",
   },
   {
-    src: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800&q=80",
-    alt: "Screened outdoor room",
-    category: "Screen Rooms",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1600210492493-0946911123ea?w=800&q=80",
-    alt: "Home with window awnings",
+    src: "/images/awning.jpg",
+    alt: "Aluminum window awning on a Phoenix home",
     category: "Awnings",
   },
   {
-    src: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&q=80",
-    alt: "Desert home exterior",
+    src: "/images/siding.jpg",
+    alt: "Home with vinyl and aluminum siding",
     category: "Siding",
+  },
+  {
+    src: "/images/screen-room.jpg",
+    alt: "Aluminum-framed screen room patio enclosure",
+    category: "Screen Rooms",
   },
 ];
 
